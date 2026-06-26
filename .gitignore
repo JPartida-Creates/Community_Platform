@@ -1,0 +1,20 @@
+node_modules
+client/node_modules
+server/node_modules
+
+dist
+client/dist
+server/dist
+server/client-dist
+
+.env
+.env.local
+server/data/store.json
+
+.DS_Store
+
+# Test data
+data-test/
+
+# Generated local exports
+tmp/reports/
