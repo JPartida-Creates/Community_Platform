@@ -7,7 +7,7 @@ import { useAuth } from '../contexts/AuthContext';
 const navItems = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/program', label: 'Program', icon: BookOpen },
-  { to: '/community', label: 'Community', icon: MessageSquare },
+  { to: '/community', label: 'Forums', icon: MessageSquare },
   { to: '/deliverables', label: 'Deliverables', icon: ClipboardCheck },
   { to: '/profile', label: 'Profile', icon: UserCircle2 },
   { to: '/settings', label: 'Settings', icon: Settings },
