@@ -1,10 +1,26 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
 :root {
-  color: #0f172a;
-  background: #f8fafc;
-  font-family: "IBM Plex Sans", "Space Grotesk", system-ui, sans-serif;
+  --navy: #002060;
+  --blue: #1B90FF;
+  --light-blue: #89D1FF;
+  --magenta: #DF1278;
+  --deep-navy: #000D24;
+  --page-bg: #EAF5FF;
+  --panel-bg: #F5FAFF;
+  --card: #FFFFFF;
+  --border: #CFE6FA;
+  --body-text: #445063;
+  --tertiary-text: #637080;
+  --urgent-bg: #FFF8E8;
+  --urgent-border: #FFD87A;
+  --error-bg: #FFF0F5;
+  --error-border: #FFB3D1;
+
+  color: var(--navy);
+  background: var(--page-bg);
+  font-family: 'Inter', system-ui, sans-serif;
 }
 
 * {
@@ -14,12 +30,16 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background: #f8fafc;
+  background: var(--page-bg);
 }
 
 a {
   color: inherit;
   text-decoration: none;
+}
+
+a.text-white {
+  color: #ffffff;
 }
 
 button,
@@ -30,4 +50,16 @@ textarea {
 
 textarea {
   resize: vertical;
+}
+
+@keyframes shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position: 600px 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #EAF5FF 25%, #CFE6FA 50%, #EAF5FF 75%);
+  background-size: 600px 100%;
+  animation: shimmer 1.4s infinite linear;
+  border-radius: 0.75rem;
 }

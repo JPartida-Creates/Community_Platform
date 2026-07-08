@@ -1,22 +1,26 @@
-import type { ButtonHTMLAttributes, ReactNode } from 'react';
+import type { ButtonHTMLAttributes, CSSProperties, ReactNode } from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowRight } from 'lucide-react';
 
 export function ShellCard({
   title,
   subtitle,
   children,
   className = '',
+  style,
 }: {
   title?: string;
   subtitle?: string;
   children: ReactNode;
   className?: string;
+  style?: CSSProperties;
 }) {
   return (
-    <section className={`rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-[0_18px_60px_rgba(15,23,42,0.08)] backdrop-blur ${className}`}>
+    <section className={`rounded-3xl border border-[#CFE6FA] bg-white p-6 shadow-[0_18px_60px_rgba(0,32,96,0.07)] ${className}`} style={style}>
       {(title || subtitle) && (
         <header className="mb-5">
-          {title ? <h2 className="text-xl font-semibold text-slate-950">{title}</h2> : null}
-          {subtitle ? <p className="mt-2 text-sm text-slate-600">{subtitle}</p> : null}
+          {title ? <h2 className="text-xl font-semibold text-[#002060]">{title}</h2> : null}
+          {subtitle ? <p className="mt-2 text-sm text-[#445063]">{subtitle}</p> : null}
         </header>
       )}
       {children}
@@ -33,9 +37,9 @@ export function Button({
   variant?: 'primary' | 'secondary' | 'ghost';
 }) {
   const variantClass = {
-    primary: 'bg-slate-950 text-white hover:bg-slate-800',
-    secondary: 'bg-emerald-100 text-emerald-950 hover:bg-emerald-200',
-    ghost: 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200',
+    primary: 'bg-[#DF1278] text-white hover:bg-[#c0105e]',
+    secondary: 'bg-[#EAF5FF] text-[#002060] hover:bg-[#CFE6FA]',
+    ghost: 'bg-white text-[#445063] hover:bg-[#F5FAFF] border border-[#CFE6FA]',
   }[variant];
 
   return (
@@ -52,24 +56,47 @@ export function Metric({
   label,
   value,
   hint,
+  to,
 }: {
   label: string;
   value: string | number;
   hint?: string;
+  to?: string;
 }) {
+  const content = (
+    <>
+      <div className="flex items-center justify-between">
+        <div className="text-xs uppercase tracking-[0.24em] text-[#637080]" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{label}</div>
+        {to && <ArrowRight size={14} className="text-[#CFE6FA] transition group-hover:text-[#1B90FF]" />}
+      </div>
+      <div className="mt-2 text-3xl font-semibold text-[#002060]">{value}</div>
+      {hint ? <div className="mt-1 text-sm text-[#445063]">{hint}</div> : null}
+    </>
+  );
+
+  if (to) {
+    return (
+      <Link to={to} className="group rounded-2xl border border-[#CFE6FA] bg-[#F5FAFF] p-4 transition hover:border-[#1B90FF] hover:shadow-[0_4px_16px_rgba(27,144,255,0.1)]">
+        {content}
+      </Link>
+    );
+  }
+
   return (
-    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-      <div className="text-xs uppercase tracking-[0.24em] text-slate-500">{label}</div>
-      <div className="mt-2 text-3xl font-semibold text-slate-950">{value}</div>
-      {hint ? <div className="mt-1 text-sm text-slate-600">{hint}</div> : null}
+    <div className="rounded-2xl border border-[#CFE6FA] bg-[#F5FAFF] p-4">
+      {content}
     </div>
   );
 }
 
 export function Badge({ children }: { children: ReactNode }) {
   return (
-    <span className="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
+    <span className="inline-flex items-center rounded-full bg-[#EAF5FF] px-3 py-1 text-xs font-semibold text-[#1B90FF]" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>
       {children}
     </span>
   );
+}
+
+export function Skeleton({ className = '' }: { className?: string }) {
+  return <div className={`skeleton ${className}`} />;
 }

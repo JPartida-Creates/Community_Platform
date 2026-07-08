@@ -83,6 +83,7 @@ export const api = {
     method: 'POST',
     body: JSON.stringify(payload),
   }),
+  communityStats: () => request<any>('/collaboration/stats'),
   communityTopics: () => request<CommunityTopicListItem[]>('/collaboration/topics'),
   communityTopic: (topicId: string) => request<CommunityTopicDetail>(`/collaboration/topics/${encodeURIComponent(topicId)}`),
   createCommunityTopic: (payload: { title: string; content: string; category: string; tags: string[] }) => request('/collaboration/topics', {

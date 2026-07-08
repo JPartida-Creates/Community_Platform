@@ -349,6 +349,73 @@ export class StoreService implements OnModuleInit {
     ];
   }
 
+  getCommunityStats(userId: string) {
+    const now = new Date();
+    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+
+    const allTopics = this.store.communityTopics;
+    const totalContributions = allTopics.reduce((sum, t) => sum + t.posts.length, 0) + allTopics.length;
+
+    // Active this week: unique authors who posted or created a topic in last 7 days
+    const activeIds = new Set<string>();
+    for (const topic of allTopics) {
+      if (topic.createdAt >= weekAgo) activeIds.add(topic.authorId);
+      for (const post of topic.posts) {
+        if (post.createdAt >= weekAgo) activeIds.add(post.authorId);
+      }
+    }
+
+    // Top contributor by post count
+    const postCounts: Record<string, number> = {};
+    for (const topic of allTopics) {
+      postCounts[topic.authorId] = (postCounts[topic.authorId] ?? 0) + 1;
+      for (const post of topic.posts) {
+        postCounts[post.authorId] = (postCounts[post.authorId] ?? 0) + 1;
+      }
+    }
+    const topContributorId = Object.entries(postCounts).sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
+    const topContributor = topContributorId ? this.findUserById(topContributorId)?.fullName ?? null : null;
+
+    // Trending this week: top 3 topics by posts + likes created/updated this week
+    const trending = allTopics
+      .filter((t) => t.updatedAt >= weekAgo)
+      .sort((a, b) => (b.posts.length + b.likedBy.length) - (a.posts.length + a.likedBy.length))
+      .slice(0, 3)
+      .map((t) => ({ ID: t.id, TITLE: t.title, POST_COUNT: t.posts.length, LIKE_COUNT: t.likedBy.length }));
+
+    // New today
+    const newToday = allTopics
+      .filter((t) => t.createdAt >= todayStart)
+      .slice(0, 3)
+      .map((t) => ({ ID: t.id, TITLE: t.title }));
+
+    // Leaderboard snapshot: top 5 by community contributions
+    const leaderboard = this.getRanking()
+      .sort((a, b) => b.totalPoints - a.totalPoints)
+      .slice(0, 5)
+      .map((entry, i) => ({ rank: i + 1, fullName: entry.fullName, totalPoints: entry.totalPoints }));
+
+    // Your activity
+    const myTopics = allTopics.filter((t) => t.authorId === userId).length;
+    const myReplies = allTopics.reduce((sum, t) => sum + t.posts.filter((p) => p.authorId === userId).length, 0);
+
+    return {
+      members: this.store.users.length,
+      activeThisWeek: activeIds.size,
+      contributions: totalContributions,
+      topContributor,
+      trending,
+      newToday,
+      leaderboard,
+      myActivity: {
+        topicsStarted: myTopics,
+        repliesOnTopics: myReplies,
+        acceptedAnswers: 0,
+      },
+    };
+  }
+
   listCommunityTopics() {
     return this.store.communityTopics
       .slice()

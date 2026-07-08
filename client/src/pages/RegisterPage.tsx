@@ -25,7 +25,7 @@ export function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 px-4 py-10">
+    <div className="min-h-screen bg-[#EAF5FF] px-4 py-10">
       <div className="mx-auto max-w-xl">
         <ShellCard title="Create learner account" subtitle="Register a local account for this reusable starter.">
           <form className="space-y-4" onSubmit={submit}>
@@ -36,20 +36,20 @@ export function RegisterPage() {
               ['password', 'Password'],
             ].map(([key, label]) => (
               <label key={key} className="block">
-                <span className="mb-2 block text-sm font-medium text-slate-700">{label}</span>
+                <span className="mb-2 block text-sm font-medium text-[#445063]">{label}</span>
                 <input
                   type={key === 'password' ? 'password' : 'text'}
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-slate-950"
+                  className="w-full rounded-2xl border border-[#CFE6FA] px-4 py-3 outline-none focus:border-[#1B90FF]"
                   value={form[key as keyof typeof form]}
                   onChange={(event) => setForm((current) => ({ ...current, [key]: event.target.value }))}
                 />
               </label>
             ))}
-            {error ? <div className="rounded-2xl bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div> : null}
+            {error ? <div className="rounded-2xl border border-[#FFB3D1] bg-[#FFF0F5] px-4 py-3 text-sm text-[#DF1278]">{error}</div> : null}
             <Button type="submit">Create account</Button>
           </form>
-          <div className="mt-6 text-sm text-slate-600">
-            Already set? <Link className="font-semibold text-slate-950" to="/login">Back to sign in</Link>
+          <div className="mt-6 text-sm text-[#445063]">
+            Already set? <Link className="font-semibold text-[#1B90FF]" to="/login">Back to sign in</Link>
           </div>
         </ShellCard>
       </div>

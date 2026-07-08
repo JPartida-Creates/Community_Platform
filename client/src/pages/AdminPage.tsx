@@ -28,10 +28,10 @@ export function AdminPage() {
         <ShellCard title="Users" subtitle="Seeded starter identities.">
           <div className="space-y-3">
             {users.map((user) => (
-              <div key={user.id} className="rounded-2xl border border-slate-200 p-4">
-                <div className="font-semibold text-slate-950">{user.fullName}</div>
-                <div className="text-sm text-slate-600">{user.email}</div>
-                <div className="mt-2 text-xs uppercase tracking-[0.24em] text-slate-500">{user.role} · {user.track}</div>
+              <div key={user.id} className="rounded-2xl border border-[#CFE6FA] p-4">
+                <div className="font-semibold text-[#002060]">{user.fullName}</div>
+                <div className="text-sm text-[#445063]">{user.email}</div>
+                <div className="mt-2 text-xs uppercase tracking-[0.24em] text-[#637080]" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{user.role} · {user.track}</div>
               </div>
             ))}
           </div>
@@ -40,12 +40,12 @@ export function AdminPage() {
         <ShellCard title="Leaderboard" subtitle="Simple points model for demo use.">
           <div className="space-y-3">
             {ranking.map((entry, index) => (
-              <div key={entry.userId} className="flex items-center justify-between rounded-2xl border border-slate-200 px-4 py-3">
+              <div key={entry.userId} className="flex items-center justify-between rounded-2xl border border-[#CFE6FA] px-4 py-3">
                 <div>
-                  <div className="font-semibold text-slate-950">{index + 1}. {entry.fullName}</div>
-                  <div className="text-sm text-slate-600">{entry.track}</div>
+                  <div className="font-semibold text-[#002060]">{index + 1}. {entry.fullName}</div>
+                  <div className="text-sm text-[#445063]">{entry.track}</div>
                 </div>
-                <div className="text-lg font-semibold text-slate-950">{entry.totalPoints}</div>
+                <div className="text-lg font-semibold text-[#002060]">{entry.totalPoints}</div>
               </div>
             ))}
           </div>

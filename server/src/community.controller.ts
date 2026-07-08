@@ -7,6 +7,11 @@ import { StoreService } from './store.service';
 export class CommunityController {
   constructor(private readonly store: StoreService) {}
 
+  @Get('stats')
+  stats(@Req() req: any) {
+    return this.store.getCommunityStats(req.user.userId);
+  }
+
   @Get('topics')
   topics() {
     return this.store.listCommunityTopics();

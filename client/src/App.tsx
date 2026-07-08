@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { ToastProvider } from './components/Toast';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { MainLayout } from './components/MainLayout';
 import { LoginPage } from './pages/LoginPage';
@@ -15,6 +16,10 @@ import { SettingsPage } from './pages/SettingsPage';
 import { AboutPlatformPage } from './pages/AboutPlatformPage';
 import { PrivacyPage } from './pages/PrivacyPage';
 import { AdminPage } from './pages/AdminPage';
+import { OpportunitiesPage } from './pages/OpportunitiesPage';
+import { LearningPage } from './pages/LearningPage';
+import { RankingPage } from './pages/RankingPage';
+import { ConnectionsPassportPage } from './pages/ConnectionsPassportPage';
 
 function AdminRoute() {
   const { user } = useAuth();
@@ -36,6 +41,10 @@ function AppRoutes() {
           <Route path="/community" element={<CommunityPage />} />
           <Route path="/community/topic/:id" element={<CommunityTopicPage />} />
           <Route path="/deliverables" element={<DeliverablesPage />} />
+          <Route path="/opportunities" element={<OpportunitiesPage />} />
+          <Route path="/learning" element={<LearningPage />} />
+          <Route path="/ranking" element={<RankingPage />} />
+          <Route path="/connections-passport" element={<ConnectionsPassportPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/settings/about" element={<AboutPlatformPage />} />
@@ -53,7 +62,9 @@ function AppRoutes() {
 export default function App() {
   return (
     <AuthProvider>
-      <AppRoutes />
+      <ToastProvider>
+        <AppRoutes />
+      </ToastProvider>
     </AuthProvider>
   );
 }
