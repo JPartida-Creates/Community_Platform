@@ -14,7 +14,7 @@ describe('Seed data', () => {
 
   it('creates three seed users', () => {
     expect(store.users).toHaveLength(3);
-    expect(store.users.map((u) => u.role).sort()).toEqual(['ADMIN', 'FACULTY', 'LEARNER']);
+    expect(store.users.map((u) => u.role).sort()).toEqual(['ADMIN', 'LEADER', 'STUDENT']);
     store.users.forEach((user) => {
       expect(user.email).toContain('@example.com');
       expect(user.passwordHash).toContain(':');

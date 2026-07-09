@@ -1,4 +1,4 @@
-export type StarterRole = 'ADMIN' | 'FACULTY' | 'LEARNER';
+export type StarterRole = 'ADMIN' | 'LEADER' | 'STUDENT' | 'PROGRAM_PARTICIPANT';
 
 export type SeedUser = {
   id: string;
@@ -156,7 +156,7 @@ export const defaultSeedUsers: SeedUser[] = [
     id: 'user-faculty',
     email: 'faculty@example.com',
     fullName: 'Jordan Kim',
-    role: 'FACULTY',
+    role: 'LEADER',
     track: 'Facilitation',
     bio: 'Facilitator shaping discussion, feedback, and learner momentum.',
     interests: ['Coaching', 'Community', 'Deliverables'],
@@ -166,7 +166,7 @@ export const defaultSeedUsers: SeedUser[] = [
     id: 'user-learner',
     email: 'learner@example.com',
     fullName: 'Taylor Brooks',
-    role: 'LEARNER',
+    role: 'STUDENT',
     track: 'Product Strategy',
     bio: 'Demo learner working through the reusable curriculum.',
     interests: ['Discovery', 'Storytelling', 'Execution'],

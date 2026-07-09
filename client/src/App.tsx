@@ -44,7 +44,6 @@ function AppRoutes() {
           <Route path="/opportunities" element={<OpportunitiesPage />} />
           <Route path="/learning" element={<LearningPage />} />
           <Route path="/ranking" element={<RankingPage />} />
-          <Route path="/connections-passport" element={<ConnectionsPassportPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/settings/about" element={<AboutPlatformPage />} />
@@ -52,6 +51,7 @@ function AppRoutes() {
           <Route path="/admin" element={<AdminRoute />} />
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
         </Route>
+        <Route path="/connections-passport" element={<ConnectionsPassportPage />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/login" replace />} />

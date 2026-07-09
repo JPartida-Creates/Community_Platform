@@ -2,7 +2,7 @@ import React, { useState, useMemo, useCallback } from "react";
 import {
   Coffee, MapPin, Globe2, Stamp, User, Users, Shuffle, Check, Clock,
   X, ShieldCheck, ArrowRight, ArrowLeft, Sparkles, Building2, Award,
-  ChevronRight, LogIn, LayoutDashboard, BadgeCheck, Hourglass, Eye, EyeOff
+  ChevronRight, LogIn, LayoutDashboard, BadgeCheck, Hourglass, Eye, EyeOff, ExternalLink
 } from "lucide-react";
 
 /* ============================================================
@@ -504,7 +504,7 @@ const BADGE_FULL_NAMES = ALL_BADGES.map((_, i) => [
   "5 Offices Collected","Office Hopper","Stamp Collector","Passport Pro",
 ][i]);
 
-function PassportPanel({ user }) {
+function PassportPanel({ user, platformUser }) {
   const regionEntries = Object.entries(user.collectedRegions);
   const officeEntries = Object.entries(user.collectedOffices);
 
@@ -515,7 +515,7 @@ function PassportPanel({ user }) {
       {/* User card */}
       <div className="px-4 py-3 border-b flex items-center gap-3" style={{ borderColor: "#CFE6FA" }}>
         <Avatar name={user.name} size={40} />
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <div className="font-semibold text-sm truncate" style={{ color: "#002060", fontFamily: "'Fraunces', serif" }}>
             {user.name}
           </div>
@@ -525,6 +525,14 @@ function PassportPanel({ user }) {
             <span className="text-xs text-[#7C8896]">{user.office}</span>
           </div>
         </div>
+        {platformUser && (
+          <a href="/profile"
+            className="shrink-0 flex items-center gap-1 text-[11px] font-medium rounded-full px-2.5 py-1 transition-colors"
+            style={{ color: "#1B90FF", backgroundColor: "#EAF5FF", border: "1px solid #CFE6FA" }}
+            title="Edit your profile">
+            <ExternalLink size={10} /> Edit
+          </a>
+        )}
       </div>
 
       {/* Stats row */}
@@ -2373,19 +2381,129 @@ function NotificationBanner({ notifications, onDismiss }) {
   );
 }
 
-export default function CoffeePassportApp() {
+/* ---------------------- Responsive Dashboard Layout ---------------------- */
+
+const DASH_TABS = [
+  { id: "passport", label: "My Passport" },
+  { id: "match",    label: "Find a Match" },
+  { id: "matches",  label: "Matches" },
+];
+
+function useMediaQuery(query) {
+  const [matches, setMatches] = React.useState(() =>
+    typeof window !== "undefined" ? window.matchMedia(query).matches : false
+  );
+  React.useEffect(() => {
+    const mql = window.matchMedia(query);
+    const handler = e => setMatches(e.matches);
+    mql.addEventListener("change", handler);
+    return () => mql.removeEventListener("change", handler);
+  }, [query]);
+  return matches;
+}
+
+function DashboardLayout({ users, matches, currentUser, platformUser, onAccept, onReshuffle, reshufflesLeft, matchesLeft, onConfirm, onRemove, onAcknowledge }) {
+  const [activeTab, setActiveTab] = React.useState("match");
+  const isWide = useMediaQuery("(min-width: 1024px)");
+
+  if (isWide) {
+    return (
+      <div className="flex-1 overflow-hidden grid" style={{ gridTemplateColumns: "260px 1fr 280px" }}>
+        <div className="border-r overflow-hidden" style={{ borderColor: "#CFE6FA", backgroundColor: "#F5FAFF" }}>
+          <PassportPanel user={currentUser} platformUser={platformUser} />
+        </div>
+        <div className="border-r overflow-hidden bg-white" style={{ borderColor: "#CFE6FA" }}>
+          <MatchPanel
+            users={users} matches={matches} currentUser={currentUser}
+            onAccept={onAccept} onReshuffle={onReshuffle}
+            reshufflesLeft={reshufflesLeft} matchesLeft={matchesLeft}
+          />
+        </div>
+        <div className="overflow-hidden" style={{ backgroundColor: "#F5FAFF" }}>
+          <MatchesPanel matches={matches} users={users} currentUser={currentUser}
+            onConfirm={onConfirm} onRemove={onRemove} onAcknowledge={onAcknowledge} />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col flex-1 overflow-hidden">
+      {/* Tab bar */}
+      <div className="flex border-b shrink-0" style={{ borderColor: "#CFE6FA", backgroundColor: "#F5FAFF" }}>
+        {DASH_TABS.map(tab => (
+          <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+            className="flex-1 py-2.5 text-xs font-semibold transition-colors"
+            style={{
+              color: activeTab === tab.id ? "#002060" : "#7C8896",
+              borderBottom: activeTab === tab.id ? "2px solid #1B90FF" : "2px solid transparent",
+              backgroundColor: "transparent",
+            }}>
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Active panel */}
+      <div className="flex-1 overflow-hidden" style={{ backgroundColor: activeTab === "match" ? "#fff" : "#F5FAFF" }}>
+        {activeTab === "passport" && (
+          <PassportPanel user={currentUser} platformUser={platformUser} />
+        )}
+        {activeTab === "match" && (
+          <MatchPanel
+            users={users} matches={matches} currentUser={currentUser}
+            onAccept={onAccept} onReshuffle={onReshuffle}
+            reshufflesLeft={reshufflesLeft} matchesLeft={matchesLeft}
+          />
+        )}
+        {activeTab === "matches" && (
+          <MatchesPanel matches={matches} users={users} currentUser={currentUser}
+            onConfirm={onConfirm} onRemove={onRemove} onAcknowledge={onAcknowledge} />
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default function CoffeePassportApp({ platformUser } = {}) {
   useFonts();
 
   const [{ users, matches }, setState] = useState(() => {
     const u = seedUsers();
+    // If a platform user is provided, inject them as the first entry with id 0
+    if (platformUser) {
+      const officeInfo = OFFICES[0]; // default office; user can update via Profile tab
+      u.unshift({
+        id: 0,
+        name: platformUser.fullName,
+        role: platformUser.track || "SAP Next Gen Member",
+        region: officeInfo.region,
+        country: officeInfo.country,
+        office: officeInfo.office,
+        timezone: getTimezone(officeInfo.office, officeInfo.country),
+        interests: (platformUser.interests || []).filter(i => INTEREST_POOL.includes(i)),
+        optedIn: true,
+        paused: false,
+        deleted: false,
+        consentGiven: true,
+        collectedRegions: {},
+        collectedOffices: {},
+        chatsCompleted: 0,
+        badges: [],
+        lastReshuffleDate: null,
+        reshufflesUsedToday: 0,
+        lastMatchAcceptDate: null,
+        matchesAcceptedToday: 0,
+      });
+    }
     const m = seedMatches(u);
     return { users: u, matches: m };
   });
 
-  const [currentUserId, setCurrentUserId] = useState(1);
+  const [currentUserId, setCurrentUserId] = useState(platformUser ? 0 : 1);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [view, setView] = useState("signup");
-  const [signedUpIds, setSignedUpIds] = useState(new Set());
+  const [view, setView] = useState(platformUser ? "dashboard" : "signup");
+  const [signedUpIds, setSignedUpIds] = useState(() => platformUser ? new Set([0]) : new Set());
   const hasSignedUp = signedUpIds.has(currentUserId);
   const [notifications, setNotifications] = useState([]);
   const [celebrating, setCelebrating] = useState(false);
@@ -2524,7 +2642,7 @@ export default function CoffeePassportApp() {
   }
 
   return (
-    <div className="flex flex-col" style={{ height: "100vh", backgroundColor: "#EAF5FF", fontFamily: "'Inter', sans-serif" }}>
+    <div className="flex flex-col" style={{ height: "100%", backgroundColor: "#EAF5FF", fontFamily: "'Inter', sans-serif" }}>
       <NotificationBanner notifications={notifications} onDismiss={dismissNotif} />
       {celebrating && <StampCelebration onDone={() => setCelebrating(false)} />}
       {incomingMatch && incomingMatchUser && (
@@ -2551,7 +2669,7 @@ export default function CoffeePassportApp() {
         {/* Nav tabs */}
         <div className="hidden sm:flex items-center gap-1 rounded-full p-1"
           style={{ backgroundColor: "#001642" }}>
-          {["dashboard","passport","signup"].map(v => (
+          {(platformUser ? ["dashboard","passport"] : ["dashboard","passport","signup"]).map(v => (
             <button key={v} onClick={() => { setView(v); setIsAdmin(false); }}
               className="px-3 py-1.5 rounded-full text-xs font-medium capitalize transition-colors"
               style={{
@@ -2564,6 +2682,7 @@ export default function CoffeePassportApp() {
         </div>
         <div className="flex items-center gap-2">
           {/* [SSO-INTEGRATION-POINT] Replace with real SAP SSO identity */}
+          {!platformUser && (
           <select
             value={currentUserId}
             onChange={e => setCurrentUserId(Number(e.target.value))}
@@ -2572,6 +2691,7 @@ export default function CoffeePassportApp() {
             title="Demo: view as another user">
             {users.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
           </select>
+          )}
           <button onClick={() => setIsAdmin(a => !a)}
             className="flex items-center gap-1.5 text-xs rounded-full px-3 py-1.5 font-medium transition-colors"
             style={{ backgroundColor: isAdmin ? "#DF1278" : "#0A3D8F", color: "#fff" }}>
@@ -2635,23 +2755,14 @@ export default function CoffeePassportApp() {
           <PassportPage user={currentUser} />
         )}
 
-        {/* Dashboard 3-panel grid */}
+        {/* Dashboard — responsive layout */}
         {view === "dashboard" && !isAdmin && (
-          <div className="flex-1 overflow-hidden grid" style={{ gridTemplateColumns: "280px 1fr 300px" }}>
-            <div className="border-r overflow-hidden" style={{ borderColor: "#CFE6FA", backgroundColor: "#F5FAFF" }}>
-              <PassportPanel user={currentUser} />
-            </div>
-            <div className="border-r overflow-hidden bg-white" style={{ borderColor: "#CFE6FA" }}>
-              <MatchPanel
-                users={users} matches={matches} currentUser={currentUser}
-                onAccept={handleAccept} onReshuffle={handleReshuffle}
-                reshufflesLeft={reshufflesLeft} matchesLeft={matchesLeft}
-              />
-            </div>
-            <div className="overflow-hidden" style={{ backgroundColor: "#F5FAFF" }}>
-              <MatchesPanel matches={matches} users={users} currentUser={currentUser} onConfirm={handleConfirm} onRemove={handleRemove} onAcknowledge={handleAcknowledge} />
-            </div>
-          </div>
+          <DashboardLayout
+            users={users} matches={matches} currentUser={currentUser} platformUser={platformUser}
+            onAccept={handleAccept} onReshuffle={handleReshuffle}
+            reshufflesLeft={reshufflesLeft} matchesLeft={matchesLeft}
+            onConfirm={handleConfirm} onRemove={handleRemove} onAcknowledge={handleAcknowledge}
+          />
         )}
 
         {isAdmin && (

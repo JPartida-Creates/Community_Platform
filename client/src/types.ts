@@ -1,4 +1,4 @@
-export type UserRole = 'ADMIN' | 'FACULTY' | 'LEARNER';
+export type UserRole = 'ADMIN' | 'LEADER' | 'STUDENT' | 'PROGRAM_PARTICIPANT';
 
 export type SessionUser = {
   userId: string;

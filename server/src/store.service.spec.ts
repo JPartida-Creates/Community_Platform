@@ -50,7 +50,7 @@ describe('StoreService core logic', () => {
     (service as any).load();
     const user = service.findUserByEmail('learner@example.com');
     expect(user).not.toBeNull();
-    expect(user!.role).toBe('LEARNER');
+    expect(user!.role).toBe('STUDENT');
   });
 
   it('returns null for unknown email', () => {
